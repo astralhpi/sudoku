@@ -25,10 +25,21 @@ class Cell(object):
         else:
             return 'empty'
 
+    @property
+    def num(self):
+        if self.type == 'fixed':
+            return self.problemcell.pnum
+        elif self.type == 'inputed':
+            return self.input
+
+    @property
+    def iscorrect(self):
+        return self.problemcell.snum == self.input
+
 
 class Board(object):
     def __init__(self, problem):
-        self.problem = problem
+        self._problem = problem
         size = problem.size
 
         self.input = np.ndarray((size,)*2)
@@ -37,7 +48,7 @@ class Board(object):
 
     @property
     def size(self):
-        return self.problem.size
+        return self._problem.size
 
     def setmemo(self, pos, num, check):
         self.memo[pos][num] = check
@@ -47,9 +58,24 @@ class Board(object):
 
     def __getitem__(self, pos):
         return Cell(
-            self.problem[pos],
+            self._problem[pos],
             self.input[pos],
             self.memo[pos])
+
+    @property
+    def solution(self):
+        return self._problem.solution
+
+    @property
+    def problem(self):
+        return self._problem.problem
+
+    @property
+    def issolved(self):
+        return all(
+            self[i, j].iscorrect
+            for i in xrange(0, self.size)
+            for j in xrange(0, self.size))
 
 
 class ProblemCell(object):
