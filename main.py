@@ -13,6 +13,8 @@ from kivy.properties import NumericProperty, ObjectProperty
 from math import sqrt
 from board import Board, Problem
 
+import numpy as np
+
 Config.set('graphics', 'width', '320')
 Config.set('graphics', 'height', '480')
 
@@ -72,7 +74,7 @@ class SudokuBoard(GridLayout):
         self.cols = sqrt_size
 
         self.group_to_cells = []
-        self.cells = [[None for i in range(size)] for i in range(size)]
+        self.cells = np.ndarray((size, size), dtype=object)
 
         for i in xrange(size):
             group = SudokuSquareGroup(
@@ -82,17 +84,12 @@ class SudokuBoard(GridLayout):
 
         for group_idx, group in enumerate(self.group_to_cells):
             for cell_idx, cell in enumerate(group):
-                group_row = group_idx / 3
-                group_col = group_idx % 3
-                cell_row = cell_idx / 3
-                cell_col = cell_idx % 3
+                group_pos = np.asarray((group_idx / 3, group_idx % 3))
+                cell_pos = np.asarray((cell_idx / 3, cell_idx % 3))
+                pos = group_pos * 3 + cell_pos
+                i, j = pos
 
-                i = group_row * 3 + cell_row
-                j = group_col * 3 + cell_col
-                print i, j
-                if self.cells[i][j] is not None:
-                    print self.cells[i][j]
-                self.cells[i][j] = cell
+                self.cells[i, j] = cell
 
         for i in range(size):
             for j in range(size):
