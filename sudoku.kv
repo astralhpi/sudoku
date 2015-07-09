@@ -8,10 +8,39 @@
             pos: self.pos
             size: self.size
 
-<InGameScreen>:
-    SecondsLabel:
-        id: playtime
-        font_size: 15
-        seconds: root.playtime
+<SudokuCell>:
+    canvas:
+        Color:
+            rgb: (1, 0, 0)
+        Rectangle:
+            pos: self.pos
+            size: self.size    
+    Label:
+        font_size: 20
+        text: str(root.num)
         color: (0, 0, 0, 1)
-        pos: (0, 0)
+        center: root.center
+
+<SudokuSquareGroup>:
+    spacing: 1, 1
+
+<SudokuBoard>:
+    spacing: 1, 1
+
+
+<InGameScreen>:
+    board: board
+
+    FloatLayout:
+        SecondsLabel:
+            id: playtime
+            font_size: '15dp'
+            seconds: root.playtime
+            color: (0, 0, 0, 1)
+            size: 100, 100
+
+        SudokuBoard:
+            id: board
+            size_hint: (1, None)
+            height: self.width
+            pos: 0, root.height - self.height
