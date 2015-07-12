@@ -51,6 +51,10 @@ class SecondsLabel(Label):
 class SudokuCell(Widget):
     num = NumericProperty(0)
 
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            print touch
+
 
 class SudokuSquareGroup(GridLayout):
     def __init__(self, **kwargs):
@@ -73,16 +77,19 @@ class SudokuBoard(GridLayout):
         self.rows = sqrt_size
         self.cols = sqrt_size
 
-        self.group_to_cells = []
+        self.groups = np.ndarray((size, size), dtype=object)
         self.cells = np.ndarray((size, size), dtype=object)
 
         for i in xrange(size):
             group = SudokuSquareGroup(
                 rows=sqrt_size, cols=sqrt_size)
             self.add_widget(group)
-            self.group_to_cells.append(group.cells)
 
-        for group_idx, group in enumerate(self.group_to_cells):
+            cells = group.cells
+            for j in xrange(size):
+                self.cells[i][j] = cells[j]
+
+        for group_idx, group in enumerate(self.cells):
             for cell_idx, cell in enumerate(group):
                 group_pos = np.asarray((group_idx / 3, group_idx % 3))
                 cell_pos = np.asarray((cell_idx / 3, cell_idx % 3))
@@ -103,8 +110,10 @@ class InGameScreen(Screen):
     def on_enter(self):
         Clock.schedule_interval(self.update_playtime, 0.2)
         problem = Problem.loads(
-            "800523910162489075350170420425008009690000057700600234037062041540317692016954003",
-            "874523916162489375359176428425738169693241857781695234937862541548317692216954783",
+            "800523910162489075350170420425008009690000"
+            "057700600234037062041540317692016954003",
+            "87452391616248937535917642842573816969324185"
+            "7781695234937862541548317692216954783",
             9)
         board = Board(problem)
         self.board.board_model = board

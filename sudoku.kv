@@ -14,7 +14,7 @@
             rgb: (1, 0, 0)
         Rectangle:
             pos: self.pos
-            size: self.size    
+            size: self.size
     Label:
         font_size: 20
         text: str(root.num)
@@ -26,6 +26,8 @@
 
 <SudokuBoard>:
     spacing: 1, 1
+    rows: 9
+    cols: 9
 
 
 <InGameScreen>:
@@ -41,6 +43,7 @@
 
         SudokuBoard:
             id: board
-            size_hint: (1, None)
+            size_hint: (None, None)
+            width: root.width
             height: self.width
             pos: 0, root.height - self.height
