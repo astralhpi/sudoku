@@ -1,31 +1,32 @@
 #:kivy 1.9.0
 
-<Screen>:
-    canvas:
-        Color:
-            rgb: (1, 1, 1)
-        Rectangle:
-            pos: self.pos
-            size: self.size
 
 <SudokuCell>:
     canvas:
         Color:
             rgb: (1, 0, 0)
-        Rectangle:
-            pos: self.pos
-            size: self.size
+        Line:
+            rectangle:
+                self.pos + self.size
+            width: 1
     Label:
         font_size: 20
         text: str(root.num)
-        color: (0, 0, 0, 1)
+        color: (1, 1, 1, 1)
         center: root.center
 
 <SudokuSquareGroup>:
+    canvas:
+        Color:
+            rgb: (0, 0, 1)
+        Line:
+            rectangle:
+                self.pos + self.size
+            width: 2
     spacing: 1, 1
 
 <SudokuBoard>:
-    spacing: 1, 1
+    spacing: 2, 2
     rows: 9
     cols: 9
 
