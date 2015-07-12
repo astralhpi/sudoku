@@ -28,6 +28,19 @@ class SudokuBoardTest(unittest.TestCase):
                 cell = self.board_view.cells[i][j]
                 self.assertEqual(
                     cell.num,
-                    self.board.problem[i][j])
+                    self.board.problem[i][j],
+                    'GUI 숫자와 문제의 숫자가 일치하는지 확인함.')
                 self.assertEqual(
-                    cell.location, [i, j])
+                    cell.loc,
+                    [i, j],
+                    '셀의 위치가 문제의 위치와 위치하는지 확인함')
+
+    def test_select_cell(self):
+        for i in xrange(self.board.size):
+            for j in xrange(self.board.size):
+                cell = self.board_view.cells[i][j]
+                cell.focus()
+
+                self.assertEqual(
+                    self.board_view.focused_loc,
+                    [i, j])

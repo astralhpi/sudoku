@@ -17,7 +17,7 @@ class SudokuCell(Widget):
     num = NumericProperty(0)
     row = NumericProperty(0)
     col = NumericProperty(0)
-    location = ReferenceListProperty(row, col)
+    loc = ReferenceListProperty(row, col)
 
     @property
     def board(self):
@@ -25,7 +25,10 @@ class SudokuCell(Widget):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            print self.location
+            self.select_cell()
+
+    def focus(self):
+        self.board.focused_loc = self.loc
 
 
 class SudokuSquareGroup(GridLayout):
@@ -40,10 +43,15 @@ class SudokuSquareGroup(GridLayout):
 
 class SudokuBoard(GridLayout):
     board_model = ObjectProperty()
+    focused_row = NumericProperty(0)
+    focused_col = NumericProperty(0)
+    focused_loc = ReferenceListProperty(focused_row, focused_col)
 
     def on_board_model(self, instance, board):
         self.clear_widgets()
         size = board.size
+
+        self.focused_loc = (size/2, size/2)
 
         sqrt_size = int(sqrt(size))
         self.rows = sqrt_size
