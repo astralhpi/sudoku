@@ -2,7 +2,7 @@
 # -*-coding:utf8-*-
 
 import unittest
-import board
+import model
 
 import numpy as np
 
@@ -14,8 +14,8 @@ class BoardTestCase(unittest.TestCase):
         s = '3628159745914738267482961354196382578251'\
             '47369673952481284769513136584792957321648'
 
-        self.problem = board.Problem.loads(p, s, 9)
-        self.board = board.Board(self.problem)
+        self.problem = model.Problem.loads(p, s, 9)
+        self.board = model.Board(self.problem)
 
     def test_load(self):
 

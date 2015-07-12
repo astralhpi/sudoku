@@ -8,10 +8,11 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.widget import Widget
 from kivy.lang import Builder
 from kivy.config import Config
-from kivy.properties import NumericProperty, ObjectProperty
+from kivy.properties import (
+    NumericProperty, ObjectProperty, ReferenceListProperty)
 
 from math import sqrt
-from board import Board, Problem
+from model import Board, Problem
 
 import numpy as np
 
@@ -50,10 +51,17 @@ class SecondsLabel(Label):
 
 class SudokuCell(Widget):
     num = NumericProperty(0)
+    row = NumericProperty(0)
+    col = NumericProperty(0)
+    location = ReferenceListProperty(row, col)
+
+    @property
+    def board(self):
+        return self.parent.parent
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            print touch
+            print self.location
 
 
 class SudokuSquareGroup(GridLayout):
@@ -61,7 +69,7 @@ class SudokuSquareGroup(GridLayout):
         super(SudokuSquareGroup, self).__init__(**kwargs)
         self.cells = []
         for i in xrange(self.rows * self.cols):
-            cell = SudokuCell(num=i)
+            cell = SudokuCell()
             self.add_widget(cell)
             self.cells.append(cell)
 
@@ -91,12 +99,15 @@ class SudokuBoard(GridLayout):
 
         for group_idx, group in enumerate(self.cells):
             for cell_idx, cell in enumerate(group):
-                group_pos = np.asarray((group_idx / 3, group_idx % 3))
-                cell_pos = np.asarray((cell_idx / 3, cell_idx % 3))
+                group_pos = np.asarray(
+                    (group_idx / 3, group_idx % 3), dtype=int)
+                cell_pos = np.asarray((cell_idx / 3, cell_idx % 3), dtype=int)
                 pos = group_pos * 3 + cell_pos
                 i, j = pos
 
                 self.cells[i, j] = cell
+                cell.row = int(i)
+                cell.col = int(j)
 
         for i in range(size):
             for j in range(size):
