@@ -26,9 +26,12 @@
     spacing: 1, 1
 
 <SudokuBoard>:
-    spacing: 2, 2
-    rows: 9
-    cols: 9
+    grid_layer: grid_layer
+    GridLayout:
+        id: grid_layer
+        rows: 9
+        cols: 9
+        spacing: 2, 2
 
 
 <SudokuScreen>:

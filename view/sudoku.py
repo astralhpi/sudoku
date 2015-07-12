@@ -41,6 +41,24 @@ class SudokuSquareGroup(GridLayout):
             self.cells.append(cell)
 
 
+class NumberLayer(Widget):
+    '''
+    숫자들이 올라가는 레이어
+    '''
+
+
+class FocusLayer(Widget):
+    '''
+    각 포커스들이 올라가는 레이어
+    '''
+
+
+class GridLayer(GridLayout):
+    '''
+    Grid를 활용하여 위치를 지정하는 레이어
+    '''
+
+
 class SudokuBoard(GridLayout):
     board_model = ObjectProperty()
     focused_row = NumericProperty(0)
