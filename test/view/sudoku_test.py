@@ -25,7 +25,7 @@ class SudokuBoardTest(unittest.TestCase):
     def test_initialize(self):
         for i in xrange(self.board.size):
             for j in xrange(self.board.size):
-                cell = self.board_view.cells[i][j]
+                cell = self.board_view.number_layer.cells[i][j]
                 self.assertEqual(
                     cell.num,
                     self.board.problem[i][j],
@@ -38,7 +38,7 @@ class SudokuBoardTest(unittest.TestCase):
     def test_select_cell(self):
         for i in xrange(self.board.size):
             for j in xrange(self.board.size):
-                cell = self.board_view.cells[i][j]
+                cell = self.board_view.grid_layer.cells[i][j]
                 cell.focus()
 
                 self.assertEqual(

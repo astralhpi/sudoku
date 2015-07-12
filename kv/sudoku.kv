@@ -1,7 +1,7 @@
 #:kivy 1.9.0
 
 
-<SudokuCell>:
+<GridCell>:
     canvas:
         Color:
             rgb: (1, 0, 0)
@@ -9,13 +9,16 @@
             rectangle:
                 self.pos + self.size
             width: 1
+
+<NumberCell>:
+    pos: self.grid_cell.pos
+    size: self.grid_cell.size
     Label:
-        font_size: 20
         text: str(root.num)
-        color: (1, 1, 1, 1)
+        font_size: '15sp'
         center: root.center
 
-<SudokuSquareGroup>:
+<Subregion>:
     canvas:
         Color:
             rgb: (0, 0, 1)

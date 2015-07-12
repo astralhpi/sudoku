@@ -6,7 +6,6 @@ import numpy as np
 from kivy.clock import Clock
 from kivy.uix.screenmanager import Screen
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 from kivy.properties import (
     NumericProperty, ObjectProperty, ReferenceListProperty)
@@ -14,15 +13,22 @@ from kivy.properties import (
 from math import sqrt
 
 
-class SudokuCell(Widget):
-    num = NumericProperty(0)
+class GridCell(Widget):
     row = NumericProperty(0)
     col = NumericProperty(0)
     loc = ReferenceListProperty(row, col)
 
     @property
     def board(self):
-        return self.parent.parent.parent
+        return self.layer.parent
+
+    @property
+    def layer(self):
+        return self.subregion.parent
+
+    @property
+    def subregion(self):
+        return self.parent
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -32,12 +38,21 @@ class SudokuCell(Widget):
         self.board.focused_loc = self.loc
 
 
-class SudokuSquareGroup(GridLayout):
+class NumberCell(Widget):
+    num = NumericProperty(0)
+    grid_cell = ObjectProperty()
+
+    @property
+    def loc(self):
+        return self.grid_cell.loc
+
+
+class Subregion(GridLayout):
     def __init__(self, **kwargs):
-        super(SudokuSquareGroup, self).__init__(**kwargs)
+        super(Subregion, self).__init__(**kwargs)
         self.cells = []
         for i in xrange(self.rows * self.cols):
-            cell = SudokuCell()
+            cell = GridCell()
             self.add_widget(cell)
             self.cells.append(cell)
 
@@ -46,6 +61,25 @@ class NumberLayer(Widget):
     '''
     숫자들이 올라가는 레이어
     '''
+
+    def __init__(self, *args, **kwargs):
+        super(NumberLayer, self).__init__(*args, **kwargs)
+        self.subregions = None
+        self.cells = None
+
+    def load_layer(self, grid_layer):
+        self.clear_widgets()
+        size = grid_layer.grid_size
+
+        self.subregions = np.ndarray((size, size), dtype=object)
+        self.cells = np.ndarray((size, size), dtype=object)
+
+        for i in xrange(size):
+            for j in xrange(size):
+                grid_cell = grid_layer.cells[i][j]
+                cell = NumberCell(num=0, grid_cell=grid_cell)
+                self.cells[i][j] = cell
+                self.add_widget(cell)
 
 
 class FocusLayer(Widget):
@@ -62,8 +96,12 @@ class GridLayer(GridLayout):
 
     def __init__(self, *args, **kwargs):
         super(GridLayer, self).__init__(*args, **kwargs)
-        self.groups = None
+        self.subregions = None
         self.cells = None
+
+    @property
+    def board(self):
+        return self.parent
 
     def on_grid_size(self, instance, size):
         self.clear_widgets()
@@ -71,24 +109,24 @@ class GridLayer(GridLayout):
         sqrt_size = int(sqrt(size))
         self.rows, self.cols = sqrt_size, sqrt_size
 
-        self.groups = np.ndarray((size, size), dtype=object)
+        self.subregions = np.ndarray((size, size), dtype=object)
         self.cells = np.ndarray((size, size), dtype=object)
 
         for i in xrange(size):
-            group = SudokuSquareGroup(
+            subregion = Subregion(
                 rows=sqrt_size, cols=sqrt_size)
-            self.add_widget(group)
+            self.add_widget(subregion)
 
-            cells = group.cells
+            cells = subregion.cells
             for j in xrange(size):
-                self.groups[i][j] = cells[j]
+                self.subregions[i][j] = cells[j]
 
-        for group_idx, group in enumerate(self.groups):
-            for cell_idx, cell in enumerate(group):
-                group_pos = np.asarray(
-                    (group_idx / 3, group_idx % 3), dtype=int)
+        for subregion_idx, subregion in enumerate(self.subregions):
+            for cell_idx, cell in enumerate(subregion):
+                subregion_pos = np.asarray(
+                    (subregion_idx / 3, subregion_idx % 3), dtype=int)
                 cell_pos = np.asarray((cell_idx / 3, cell_idx % 3), dtype=int)
-                pos = group_pos * 3 + cell_pos
+                pos = subregion_pos * 3 + cell_pos
                 row, col = pos
 
                 self.cells[row, col] = cell
@@ -115,9 +153,10 @@ class SudokuBoard(Widget):
         self.grid_layer.grid_size = size
         self.focused_loc = (size/2, size/2)
 
+        self.number_layer.load_layer(self.grid_layer)
         for i in range(size):
             for j in range(size):
-                self.grid_layer.cells[i][j].num = int(board.problem[i][j])
+                self.number_layer.cells[i][j].num = int(board.problem[i][j])
 
 
 class SudokuScreen(Screen):
