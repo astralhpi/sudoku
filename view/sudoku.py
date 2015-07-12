@@ -25,7 +25,7 @@ class SudokuCell(Widget):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.select_cell()
+            self.focus()
 
     def focus(self):
         self.board.focused_loc = self.loc
