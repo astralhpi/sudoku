@@ -107,16 +107,12 @@ class InGameScreen(Screen):
     playtime = NumericProperty(0.0)
     board = ObjectProperty()
 
+    def __init__(self, board_model, **kwargs):
+        super(InGameScreen, self).__init__(**kwargs)
+        self.board.board_model = board_model
+
     def on_enter(self):
         Clock.schedule_interval(self.update_playtime, 0.2)
-        problem = Problem.loads(
-            "800523910162489075350170420425008009690000"
-            "057700600234037062041540317692016954003",
-            "87452391616248937535917642842573816969324185"
-            "7781695234937862541548317692216954783",
-            9)
-        board = Board(problem)
-        self.board.board_model = board
 
     def on_pre_leave(self):
         Clock.unschedule(self.update_playtime)
@@ -124,12 +120,16 @@ class InGameScreen(Screen):
     def update_playtime(self, dt):
         self.playtime += dt
 
+problem = Problem.loads(
+            "800523910162489075350170420425008009690000"
+            "057700600234037062041540317692016954003",
+            "87452391616248937535917642842573816969324185"
+            "7781695234937862541548317692216954783",
+            9)
+board = Board(problem)
 
 sm = ScreenManager()
-sm.add_widget(MainScreen(name='main'))
-sm.add_widget(NewGameScreen(name='newgame'))
-sm.add_widget(InGameScreen(name='ingame'))
-sm.current = 'ingame'
+sm.switch_to(InGameScreen(board_model=board))
 
 
 class SudokuApp(App):
