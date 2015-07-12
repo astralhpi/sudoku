@@ -6,6 +6,7 @@ import numpy as np
 from kivy.clock import Clock
 from kivy.uix.screenmanager import Screen
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 from kivy.properties import (
     NumericProperty, ObjectProperty, ReferenceListProperty)
@@ -21,7 +22,7 @@ class SudokuCell(Widget):
 
     @property
     def board(self):
-        return self.parent.parent
+        return self.parent.parent.parent
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -59,21 +60,25 @@ class GridLayer(GridLayout):
     '''
 
 
-class SudokuBoard(GridLayout):
+class SudokuBoard(Widget):
+    grid_layer = ObjectProperty()
+    focus_layer = ObjectProperty()
+    number_layer = ObjectProperty()
+
     board_model = ObjectProperty()
+
     focused_row = NumericProperty(0)
     focused_col = NumericProperty(0)
     focused_loc = ReferenceListProperty(focused_row, focused_col)
 
     def on_board_model(self, instance, board):
-        self.clear_widgets()
+        self.grid_layer.clear_widgets()
+        self.number_layer.clear_widgets()
+
         size = board.size
-
-        self.focused_loc = (size/2, size/2)
-
         sqrt_size = int(sqrt(size))
-        self.rows = sqrt_size
-        self.cols = sqrt_size
+        self.focused_loc = (size/2, size/2)
+        self.grid_layer.rows, self.grid_layer.cols = sqrt_size, sqrt_size
 
         self.groups = np.ndarray((size, size), dtype=object)
         self.cells = np.ndarray((size, size), dtype=object)
@@ -81,7 +86,7 @@ class SudokuBoard(GridLayout):
         for i in xrange(size):
             group = SudokuSquareGroup(
                 rows=sqrt_size, cols=sqrt_size)
-            self.add_widget(group)
+            self.grid_layer.add_widget(group)
 
             cells = group.cells
             for j in xrange(size):

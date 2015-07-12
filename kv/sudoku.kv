@@ -27,11 +27,26 @@
 
 <SudokuBoard>:
     grid_layer: grid_layer
-    GridLayout:
+    focus_layer: focus_layer
+    number_layer: number_layer
+
+    GridLayer:
         id: grid_layer
-        rows: 9
-        cols: 9
+        rows: 3
+        cols: 3
         spacing: 2, 2
+        size: root.size
+        pos: root.pos
+
+    FocusLayer:
+        id: focus_layer
+        size: root.size
+        pos: root.pos
+
+    NumberLayer:
+        id: number_layer
+        size: root.size
+        pos: root.pos
 
 
 <SudokuScreen>:
