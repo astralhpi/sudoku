@@ -58,6 +58,42 @@ class GridLayer(GridLayout):
     '''
     Grid를 활용하여 위치를 지정하는 레이어
     '''
+    grid_size = NumericProperty(0)
+
+    def __init__(self, *args, **kwargs):
+        super(GridLayer, self).__init__(*args, **kwargs)
+        self.groups = None
+        self.cells = None
+
+    def on_grid_size(self, instance, size):
+        self.clear_widgets()
+
+        sqrt_size = int(sqrt(size))
+        self.rows, self.cols = sqrt_size, sqrt_size
+
+        self.groups = np.ndarray((size, size), dtype=object)
+        self.cells = np.ndarray((size, size), dtype=object)
+
+        for i in xrange(size):
+            group = SudokuSquareGroup(
+                rows=sqrt_size, cols=sqrt_size)
+            self.add_widget(group)
+
+            cells = group.cells
+            for j in xrange(size):
+                self.groups[i][j] = cells[j]
+
+        for group_idx, group in enumerate(self.groups):
+            for cell_idx, cell in enumerate(group):
+                group_pos = np.asarray(
+                    (group_idx / 3, group_idx % 3), dtype=int)
+                cell_pos = np.asarray((cell_idx / 3, cell_idx % 3), dtype=int)
+                pos = group_pos * 3 + cell_pos
+                row, col = pos
+
+                self.cells[row, col] = cell
+                cell.row = int(row)
+                cell.col = int(col)
 
 
 class SudokuBoard(Widget):
@@ -76,37 +112,12 @@ class SudokuBoard(Widget):
         self.number_layer.clear_widgets()
 
         size = board.size
-        sqrt_size = int(sqrt(size))
+        self.grid_layer.grid_size = size
         self.focused_loc = (size/2, size/2)
-        self.grid_layer.rows, self.grid_layer.cols = sqrt_size, sqrt_size
-
-        self.groups = np.ndarray((size, size), dtype=object)
-        self.cells = np.ndarray((size, size), dtype=object)
-
-        for i in xrange(size):
-            group = SudokuSquareGroup(
-                rows=sqrt_size, cols=sqrt_size)
-            self.grid_layer.add_widget(group)
-
-            cells = group.cells
-            for j in xrange(size):
-                self.groups[i][j] = cells[j]
-
-        for group_idx, group in enumerate(self.groups):
-            for cell_idx, cell in enumerate(group):
-                group_pos = np.asarray(
-                    (group_idx / 3, group_idx % 3), dtype=int)
-                cell_pos = np.asarray((cell_idx / 3, cell_idx % 3), dtype=int)
-                pos = group_pos * 3 + cell_pos
-                row, col = pos
-
-                self.cells[row, col] = cell
-                cell.row = int(row)
-                cell.col = int(col)
 
         for i in range(size):
             for j in range(size):
-                self.cells[i][j].num = int(board.problem[i][j])
+                self.grid_layer.cells[i][j].num = int(board.problem[i][j])
 
 
 class SudokuScreen(Screen):
