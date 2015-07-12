@@ -43,6 +43,7 @@ class Board(object):
         size = problem.size
 
         self.input = np.ndarray((size,)*2)
+        self.input.fill(0)
         self.memo = np.ndarray((size,)*3, dtype='bool')
         self.memo.fill(False)
 
