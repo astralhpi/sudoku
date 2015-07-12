@@ -25,6 +25,9 @@ class SudokuBoardTest(unittest.TestCase):
     def test_initialize(self):
         for i in xrange(self.board.size):
             for j in xrange(self.board.size):
+                cell = self.board_view.cells[i][j]
                 self.assertEqual(
-                    self.board_view.cells[i][j].num,
+                    cell.num,
                     self.board.problem[i][j])
+                self.assertEqual(
+                    cell.location, [i, j])
