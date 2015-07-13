@@ -34,6 +34,10 @@ class GridCell(FloatLayout):
         if self.collide_point(*touch.pos):
             self.focus()
 
+    def on_touch_move(self, touch):
+        if self.collide_point(*touch.pos):
+            self.focus()
+
     def focus(self):
         self.board.focused_loc = self.loc
 
@@ -45,6 +49,10 @@ class NumberCell(FloatLayout):
     @property
     def loc(self):
         return self.grid_cell.loc
+
+
+class CellFocus(FloatLayout):
+    focused_grid_cell = ObjectProperty()
 
 
 class Subregion(GridLayout):
@@ -67,7 +75,7 @@ class NumberLayer(FloatLayout):
         self.subregions = None
         self.cells = None
 
-    def load_layer(self, grid_layer):
+    def prepare_layer(self, grid_layer):
         self.clear_widgets()
         size = grid_layer.grid_size
 
@@ -87,11 +95,13 @@ class FocusLayer(FloatLayout):
     각 포커스들이 올라가는 레이어
     '''
     focused_grid_cell = ObjectProperty()
-    cell_focus = ObjectProperty()
+
+    def __init__(self, *args, **kwargs):
+        super(FocusLayer, self).__init__(*args, **kwargs)
+        self.cell_focus = CellFocus()
 
     def on_focused_grid_cell(self, instance, cell):
-        self.cell_focus.pos = cell.pos
-        self.cell_focus.size = cell.size
+        self.cell_focus.focused_cell = cell
 
 
 class GridLayer(GridLayout):
@@ -157,16 +167,17 @@ class SudokuBoard(FloatLayout):
 
         size = board.size
         self.grid_layer.grid_size = size
-        self.focused_loc = (size/2, size/2)
 
-        self.number_layer.load_layer(self.grid_layer)
+        self.number_layer.prepare_layer(self.grid_layer)
         for i in range(size):
             for j in range(size):
                 self.number_layer.cells[i][j].num = int(board.problem[i][j])
 
-        grid_cell = self.grid_layer.cells[tuple(self.focused_loc)]
+        self.focused_loc = (size/2, size/2)
 
-        self.focus_layer.focused_grid_cell = grid_cell
+    def on_focused_loc(self, instance, loc):
+        focused_cell = self.grid_layer.cells[tuple(self.focused_loc)]
+        self.focus_layer.focused_grid_cell = focused_cell
 
 
 class SudokuScreen(Screen):

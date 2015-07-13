@@ -16,9 +16,20 @@
     size: self.grid_cell.size
     Label:
         size_hint: (None, None)
-        text: str(root.num)
+        text: str(root.num) if root.num != 0 else ''
         font_size: '15sp'
         center: root.center
+
+<CellFocus>:
+    size_hint: (None, None)
+    pos: self.focused_grid_cell.pos if self.focused_grid_cell is not None else (0, 0)
+    size: self.focused_grid_cell.size if self.focused_grid_cell is not None else (0, 0)
+    canvas:
+        Color:
+            rgb: (0, 0.5, 0)
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
 <Subregion>:
     canvas:
@@ -30,24 +41,6 @@
             width: 2
     spacing: 1, 1
 
-<FocusLayer>:
-    canvas:
-        Color:
-            rgb: (0, 0, 1)
-        Line:
-            rectangle:
-                self.pos + self.size
-            width: 2
-    cell_focus: cell_focus
-
-    Widget:
-        id: cell_focus
-        canvas:
-            Color:
-                rgb: (1, 1, 0)
-            Rectangle:
-                pos: self.pos
-                size: self.size
 
 <SudokuBoard>:
 
