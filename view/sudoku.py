@@ -5,15 +5,15 @@ import numpy as np
 
 from kivy.clock import Clock
 from kivy.uix.screenmanager import Screen
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.widget import Widget
 from kivy.properties import (
     NumericProperty, ObjectProperty, ReferenceListProperty)
 
 from math import sqrt
 
 
-class GridCell(Widget):
+class GridCell(FloatLayout):
     row = NumericProperty(0)
     col = NumericProperty(0)
     loc = ReferenceListProperty(row, col)
@@ -38,7 +38,7 @@ class GridCell(Widget):
         self.board.focused_loc = self.loc
 
 
-class NumberCell(Widget):
+class NumberCell(FloatLayout):
     num = NumericProperty(0)
     grid_cell = ObjectProperty()
 
@@ -57,7 +57,7 @@ class Subregion(GridLayout):
             self.cells.append(cell)
 
 
-class NumberLayer(Widget):
+class NumberLayer(FloatLayout):
     '''
     숫자들이 올라가는 레이어
     '''
@@ -82,10 +82,16 @@ class NumberLayer(Widget):
                 self.add_widget(cell)
 
 
-class FocusLayer(Widget):
+class FocusLayer(FloatLayout):
     '''
     각 포커스들이 올라가는 레이어
     '''
+    focused_grid_cell = ObjectProperty()
+    cell_focus = ObjectProperty()
+
+    def on_focused_grid_cell(self, instance, cell):
+        self.cell_focus.pos = cell.pos
+        self.cell_focus.size = cell.size
 
 
 class GridLayer(GridLayout):
@@ -134,7 +140,7 @@ class GridLayer(GridLayout):
                 cell.col = int(col)
 
 
-class SudokuBoard(Widget):
+class SudokuBoard(FloatLayout):
     grid_layer = ObjectProperty()
     focus_layer = ObjectProperty()
     number_layer = ObjectProperty()
@@ -157,6 +163,10 @@ class SudokuBoard(Widget):
         for i in range(size):
             for j in range(size):
                 self.number_layer.cells[i][j].num = int(board.problem[i][j])
+
+        grid_cell = self.grid_layer.cells[tuple(self.focused_loc)]
+
+        self.focus_layer.focused_grid_cell = grid_cell
 
 
 class SudokuScreen(Screen):

@@ -11,9 +11,11 @@
             width: 1
 
 <NumberCell>:
+    size_hint: (None, None)
     pos: self.grid_cell.pos
     size: self.grid_cell.size
     Label:
+        size_hint: (None, None)
         text: str(root.num)
         font_size: '15sp'
         center: root.center
@@ -28,28 +30,54 @@
             width: 2
     spacing: 1, 1
 
+<FocusLayer>:
+    canvas:
+        Color:
+            rgb: (0, 0, 1)
+        Line:
+            rectangle:
+                self.pos + self.size
+            width: 2
+    cell_focus: cell_focus
+
+    Widget:
+        id: cell_focus
+        canvas:
+            Color:
+                rgb: (1, 1, 0)
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
 <SudokuBoard>:
+
     grid_layer: grid_layer
     focus_layer: focus_layer
     number_layer: number_layer
-
+    canvas:
+        Color:
+            rgb: (1, 0, 0)
+        Line:
+            rectangle:
+                self.pos + self.size
+            width: 1
     GridLayer:
         id: grid_layer
         rows: 3
         cols: 3
         spacing: 2, 2
-        size: root.size
-        pos: root.pos
+        size_hint: (1, 1)
+        pos_hint: {'top': 1.0}
 
     FocusLayer:
         id: focus_layer
-        size: root.size
-        pos: root.pos
+        size_hint: (1, 1)
+        pos_hint: {'top': 1.0}
 
     NumberLayer:
         id: number_layer
-        size: root.size
-        pos: root.pos
+        size_hint: (1, 1)
+        pos_hint: {'top': 1.0}
 
 
 <SudokuScreen>:
@@ -65,7 +93,6 @@
 
         SudokuBoard:
             id: board
-            size_hint: (None, None)
-            width: root.width
+            size_hint: (1, None)
             height: self.width
-            pos: 0, root.height - self.height
+            pos_hint: {'top': 1.0}
