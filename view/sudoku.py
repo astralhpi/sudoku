@@ -51,10 +51,6 @@ class NumberCell(FloatLayout):
         return self.grid_cell.loc
 
 
-class CellFocus(FloatLayout):
-    focused_grid_cell = ObjectProperty()
-
-
 class Subregion(GridLayout):
     def __init__(self, **kwargs):
         super(Subregion, self).__init__(**kwargs)
@@ -94,14 +90,15 @@ class FocusLayer(FloatLayout):
     '''
     각 포커스들이 올라가는 레이어
     '''
+    cell_focus = ObjectProperty()
     focused_grid_cell = ObjectProperty()
 
     def __init__(self, *args, **kwargs):
         super(FocusLayer, self).__init__(*args, **kwargs)
-        self.cell_focus = CellFocus()
 
     def on_focused_grid_cell(self, instance, cell):
-        self.cell_focus.focused_cell = cell
+        self.cell_focus.pos_hint = {}
+        self.cell_focus.pos = cell.pos
 
 
 class GridLayer(GridLayout):
