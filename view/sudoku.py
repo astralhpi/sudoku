@@ -95,10 +95,17 @@ class FocusLayer(FloatLayout):
 
     def __init__(self, *args, **kwargs):
         super(FocusLayer, self).__init__(*args, **kwargs)
+        self.prev_grid_cell = None
 
     def on_focused_grid_cell(self, instance, cell):
-        self.cell_focus.pos_hint = {}
+        cell.bind(pos=self.on_cell_pos_changed)
+        if self.prev_grid_cell is not None:
+            self.prev_grid_cell.unbind(pos=self.on_cell_pos_changed)
         self.cell_focus.pos = cell.pos
+        self.prev_grid_cell = cell
+
+    def on_cell_pos_changed(self, cell, pos):
+        self.cell_focus.pos = pos
 
 
 class GridLayer(GridLayout):

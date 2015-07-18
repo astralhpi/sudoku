@@ -20,23 +20,11 @@
         font_size: '15sp'
         center: root.center
 
-<CellFocus>:
-    size_hint: (None, None)
-    pos: self.focused_grid_cell.pos if self.focused_grid_cell is not None else (0, 0)
-    size: self.focused_grid_cell.size if self.focused_grid_cell is not None else (0, 0)
-    canvas:
-        Color:
-            rgb: (0, 0.5, 0)
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
 <FocusLayer>:
     cell_focus: cell_focus
     Widget:
         id: cell_focus
         size_hint: (1.0/9, 1.0/9)
-        pos_hint: {'center': (0.5, 0.5)}
         canvas:
             Color:
                 rgb: (0, 0.5, 0)
