@@ -5,6 +5,7 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.config import Config
 from kivy.uix.screenmanager import ScreenManager
+from kivy.core.text import LabelBase
 
 from model import Board, Problem
 from view import SudokuScreen
@@ -14,6 +15,10 @@ Config.set('graphics', 'width', '320')
 Config.set('graphics', 'height', '480')
 
 Builder.load_file('kv/sudoku.kv')
+LabelBase.register(
+    'SeoulNamsan',
+    fn_regular='static/font/SeoulNamsanM.ttf',
+    fn_bold='static/font/SeoulNamsanB.ttf')
 
 
 problem = Problem.loads(

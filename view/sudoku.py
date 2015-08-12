@@ -184,9 +184,51 @@ class SudokuBoard(FloatLayout):
         self.focus_layer.focused_grid_cell = focused_cell
 
 
+class NumpadButton(FloatLayout):
+    number = NumericProperty(0)
+    main_button = ObjectProperty()
+    sub_button = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(NumpadButton, self).__init__(**kwargs)
+        Clock.schedule_once(self.__init_widgets, -1)
+
+    def __init_widgets(self, dt=0):
+        # self.main_button.bind(on_press=)
+
+
+
+class UpperNumpadButton(NumpadButton):
+    pass
+
+
+class LowerNumpadButton(NumpadButton):
+    pass
+
+
+class Numpad(FloatLayout):
+    upper_box = ObjectProperty()
+    lower_box = ObjectProperty()
+
+    def __init__(self, *args, **kwargs):
+        super(Numpad, self).__init__(*args, **kwargs)
+        Clock.schedule_once(self.init_widgets, -1)
+
+    def init_widgets(self, dt=0):
+        for i in range(1, 6):
+            button = UpperNumpadButton(number=i)
+            self.upper_box.add_widget(button)
+
+        for i in range(6, 10):
+            button = LowerNumpadButton(number=i)
+            self.lower_box.add_widget(button)
+
+
 class SudokuScreen(Screen):
     playtime = NumericProperty(0.0)
+
     board = ObjectProperty()
+    numpad = ObjectProperty()
 
     def __init__(self, board_model, **kwargs):
         super(SudokuScreen, self).__init__(**kwargs)
